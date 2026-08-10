@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeLearn - Platform Belajar Web Development</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background-color: #0d0d12;
+      color: #ededed;
+      line-height: 1.6;
+      padding-bottom: 3rem;
+    }
+
+    /* --- NAVBAR HEADER --- */
+    header {
+      background-color: #161622;
+      border-bottom: 1px solid #2a2a3c;
+      padding: 0.5rem 0.8rem;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+    .nav-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn-hamburger {
+      background: #232334;
+      border: 1px solid #363650;
+      color: #fff;
+      font-size: 1rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .logo {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+    .logo span { color: #c084fc; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* TOMBOL NAVBAR SUPER RINGKAS & KECIL */
+    .btn-nav-sm {
+      background: #232334;
+      border: 1px solid #363650;
+      color: #ccc;
+      padding: 0.22rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s;
+    }
+    .btn-nav-sm:hover { 
+      background: #2d2d42; 
+      color: #fff;
+    }
+
+    .btn-demo-login {
+      background: #232334;
+      border: 1px solid #9333ea;
+      color: #fff;
+    }
+    .btn-demo-login:hover { background: #2e1d42; }
+
+    /* PROFIL AKUN DEMO DI NAVBAR KANAN ATAS */
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #232334;
+      border: 1px solid #363650;
+      padding: 0.18rem 0.5rem 0.18rem 0.25rem;
+      border-radius: 15px;
+    }
+    .user-avatar-placeholder {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #9333ea;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border: 1px solid #a855f7;
+    }
+    .user-name-text {
+      font-size: 0.72rem;
+      color: #fff;
+      font-weight: 500;
+      max-width: 90px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-logout-icon {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.75rem;
+      margin-left: 0.1rem;
+    }
+
+    /* --- SIDEBAR DRAWER --- */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 260px;
+      height: 100%;
+      background: #161622;
+      border-right: 1px solid #2a2a3c;
+      z-index: 101;
+      padding: 1rem;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      border-bottom: 1px solid #2a2a3c;
+      padding-bottom: 0.6rem;
+    }
+    .btn-close { background: none; border: none; color: #aaa; font-size: 1.3rem; cursor: pointer; }
+    .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; overflow-y: auto; }
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0.7rem;
+      color: #ddd;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .sidebar-menu a span { display: flex; align-items: center; gap: 0.7rem; }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background: #232334; color: #c084fc; }
+
+    /* --- CONTENT AREA --- */
+    .container { max-width: 1000px; margin: 1rem auto; padding: 0 0.8rem; }
+    .progress-box {
+      background: #161622;
+      border: 1px solid #2a2a3c;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      margin-bottom: 1.2rem;
+    }
+    .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.4rem; color: #bbb; }
+    .progress-bar-bg { background: #232334; height: 7px; border-radius: 10px; overflow: hidden; }
+    
+    .progress-bar-fill { 
+      background: linear-gradient(90deg, #9333ea, #c084fc); 
+      height: 100%; 
+      width: 0%; 
+      border-radius: 10px; 
+      transition: width 0.5s ease-in-out;
+    }
+
+    .section-title { font-size: 0.95rem; margin: 1.2rem 0 0.7rem 0; color: #c084fc; display: flex; align-items: center; gap: 0.4rem; font-weight: bold; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0.8rem; }
+    .card { background-color: #161622; border: 1px solid #2a2a3c; border-radius: 8px; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+    .card-pro { border-color: #eab308; background-color: #1a1710; }
+    .badge { position: absolute; top: 12px; right: 12px; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    .badge-free { background: #9333ea; color: #fff; }
+    .badge-pro { background: #eab308; color: #000; }
+    .card h3 { font-size: 0.95rem; color: #fff; margin-bottom: 0.3rem; }
+    .card p { color: #aaa; font-size: 0.8rem; margin-bottom: 1rem; line-height: 1.4; }
+    .btn-primary { display: block; width: 100%; text-align: center; padding: 0.5rem; background-color: #9333ea; color: #fff; font-weight: bold; border-radius: 6px; text-decoration: none; font-size: 0.8rem; border: none; cursor: pointer; }
+    .btn-pro { background-color: #eab308; color: #000; }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR HEADER -->
+  <header>
+    <div class="nav-container">
+      <div class="nav-left">
+        <button class="btn-hamburger" id="openMenuBtn">☰</button>
+        <a href="index.html" class="logo">Code<span>Learn</span></a>
+      </div>
+      
+      <div class="nav-right">
+        <a href="playground.html" class="btn-nav-sm">⚡ Playground</a>
+        <a href="quiz.html" class="btn-nav-sm" style="border-color: #9333ea;">🧠 Quiz</a>
+        
+        <div id="authNavArea">
+          <button class="btn-nav-sm btn-demo-login" onclick="loginDemo()">
+            👤 Login Demo
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR MENU DRAWER -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="logo">Code<span>Learn</span></a>
+      <button class="btn-close" id="closeMenuBtn">&times;</button>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="index.html" class="active"><span>🏠 Beranda</span></a></li>
+      <li><a href="playground.html"><span>💻 Playground</span></a></li>
+      <li><a href="quiz.html"><span>🧠 Quiz Interaktif</span></a></li>
+      <li><hr style="border:0; border-top:1px solid #2a2a3c; margin:0.3rem 0;"></li>
+      <li style="font-size:0.7rem; color:#888; padding:0.2rem 0.7rem; font-weight:bold;">MODUL DASAR</li>
+      <li><a href="belajar.html?course=html"><span>🌐 HTML5 Structure</span></a></li>
+      <li><a href="belajar.html?course=css"><span>🎨 CSS3 Style & Layout</span></a></li>
+      <li><a href="belajar.html?course=js"><span>⚡ JavaScript Logika</span></a></li>
+      
+      <li style="font-size:0.7rem; color:#eab308; padding:0.2rem 0.7rem; font-weight:bold; margin-top:0.3rem;">MODUL PROYEK (PRO)</li>
+      <li><a onclick="processDemoPayment('Modul HTML + CSS (Pro)')"><span>🚀 HTML + CSS</span> <span id="badgeHtmlCss" style="font-size:0.7rem; color:#eab308;">🔒</span></a></li>
+      <li><a onclick="processDemoPayment('Modul Fullstack (Pro)')"><span>🔥 Fullstack (JS)</span> <span id="badgeFullstack" style="font-size:0.7rem; color:#eab308;">🔒</span></a></li>
+
+      <li><hr style="border:0; border-top:1px solid #2a2a3c; margin:0.3rem 0;"></li>
+      <li><a onclick="processDemoPayment('Akses Premium Full')" style="background: rgba(234, 179, 8, 0.1); border: 1px dashed #eab308;"><span>⭐ Akses Premium</span> <span id="badgePremiumSidebar" style="font-size:0.7rem; color:#eab308;">UPGRADE</span></a></li>
+    </ul>
+  </aside>
+
+  <div class="container">
+    <div class="progress-box">
+      <div class="progress-info">
+        <span>📊 Progres Belajar Kamu</span>
+        <strong id="progressText" style="color:#c084fc;">0% Selesai</strong>
+      </div>
+      <div class="progress-bar-bg">
+        <div id="progressBarFill" class="progress-bar-fill"></div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <span>📚</span> Modul Dasar Satuan (Gratis)
+    </div>
+    <div class="grid">
+      <div class="card">
+        <span class="badge badge-free">GRATIS</span>
+        <h3>HTML5 Structure</h3>
+        <p>Pelajari elemen dasar, tag teks, gambar, tabel, dan form web.</p>
+        <a href="belajar.html?course=html" class="btn-primary">Mulai HTML →</a>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-free">GRATIS</span>
+        <h3>CSS3 Style & Layout</h3>
+        <p>Atur desain web modern dengan Flexbox, Grid, dan warna.</p>
+        <a href="belajar.html?course=css" class="btn-primary">Mulai CSS →</a>
+      </div>
+
+      <div class="card">
+        <span class="badge badge-free">GRATIS</span>
+        <h3>JavaScript Logika</h3>
+        <p>Pelajari variabel, fungsi, kondisi, dan manipulasi DOM interaktif.</p>
+        <a href="belajar.html?course=js" class="btn-primary">Mulai JS →</a>
+      </div>
+    </div>
+
+    <div class="section-title" style="color:#eab308;">
+      <span>⭐</span> Modul Proyek Kombinasi (Premium)
+    </div>
+    <div class="grid">
+      <div class="card card-pro">
+        <span class="badge badge-pro" id="badgeCard1">PRO 🔒</span>
+        <h3>Kombinasi HTML + CSS</h3>
+        <p>Proyek pembuatan Web Landing Page dan Profil Portofolio.</p>
+        <button onclick="processDemoPayment('Kombinasi HTML + CSS')" class="btn-primary btn-pro" id="btnCard1">Proyek HTML+CSS 🔒</button>
+      </div>
+
+      <div class="card card-pro">
+        <span class="badge badge-pro" id="badgeCard2">PRO 🔒</span>
+        <h3>Fullstack (HTML + CSS + JS)</h3>
+        <p>Proyek pembuatan Web Aplikasi To-Do List dan Dashboard.</p>
+        <button onclick="processDemoPayment('Fullstack JavaScript')" class="btn-primary btn-pro" id="btnCard2">Proyek Fullstack 🔒</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT LOGIN DEMO & PEMBAYARAN -->
+  <script>
+    // Cek status login demo saat halaman dimuat
+    function checkDemoAuth() {
+      const demoUser = localStorage.getItem('codelearn_demouser');
+      const isPremium = localStorage.getItem('codelearn_is_premium') === 'true';
+      
+      updateNavUI(demoUser);
+      updateAppStatus(demoUser, isPremium);
+    }
+
+    function updateNavUI(username) {
+      const authNavArea = document.getElementById('authNavArea');
+      if (!authNavArea) return;
+
+      if (username) {
+        const initial = username.charAt(0).toUpperCase();
+        authNavArea.innerHTML = `
+          <div class="user-profile-badge">
+            <div class="user-avatar-placeholder">${initial}</div>
+            <span class="user-name-text">${username}</span>
+            <button class="btn-logout-icon" onclick="logoutDemo()" title="Keluar">✕</button>
+          </div>
+        `;
+      } else {
+        authNavArea.innerHTML = `
+          <button class="btn-nav-sm btn-demo-login" onclick="loginDemo()">
+            👤 Login Demo
+          </button>
+        `;
+      }
+    }
+
+    function updateAppStatus(username, isPremium) {
+      // Tombol kartu Pro dan Sidebar
+      const btnCard1 = document.getElementById('btnCard1');
+      const btnCard2 = document.getElementById('btnCard2');
+      const badgeCard1 = document.getElementById('badgeCard1');
+      const badgeCard2 = document.getElementById('badgeCard2');
+      const badgeHtmlCss = document.getElementById('badgeHtmlCss');
+      const badgeFullstack = document.getElementById('badgeFullstack');
+      const badgePremiumSidebar = document.getElementById('badgePremiumSidebar');
+
+      if (isPremium) {
+        if (btnCard1) { btnCard1.textContent = "Buka Proyek →"; btnCard1.style.background = "#22c55e"; btnCard1.style.color = "#fff"; }
+        if (btnCard2) { btnCard2.textContent = "Buka Proyek →"; btnCard2.style.background = "#22c55e"; btnCard2.style.color = "#fff"; }
+        if (badgeCard1) badgeCard1.textContent = "UNLOCKED";
+        if (badgeCard2) badgeCard2.textContent = "UNLOCKED";
+        if (badgeHtmlCss) badgeHtmlCss.textContent = "🔓";
+        if (badgeFullstack) badgeFullstack.textContent = "🔓";
+        if (badgePremiumSidebar) badgePremiumSidebar.textContent = "AKTIF ✓";
+      } else {
+        if (btnCard1) { btnCard1.textContent = "Proyek HTML+CSS 🔒"; btnCard1.style.background = ""; btnCard1.style.color = ""; }
+        if (btnCard2) { btnCard2.textContent = "Proyek Fullstack 🔒"; btnCard2.style.background = ""; btnCard2.style.color = ""; }
+        if (badgeCard1) badgeCard1.textContent = "PRO";
+        if (badgeCard2) badgeCard2.textContent = "PRO";
+        if (badgeHtmlCss) badgeHtmlCss.textContent = "🔒";
+        if (badgeFullstack) badgeFullstack.textContent = "🔒";
+        if (badgePremiumSidebar) badgePremiumSidebar.textContent = "UPGRADE";
+      }
+
+      // Progres belajar demo
+      const progressText = document.getElementById('progressText');
+      const progressBarFill = document.getElementById('progressBarFill');
+      if (progressText && progressBarFill) {
+        if (username) {
+          progressText.textContent = "40% Selesai";
+          progressBarFill.style.width = "40%";
+        } else {
+          progressText.textContent = "0% Selesai";
+          progressBarFill.style.width = "0%";
+        }
+      }
+    }
+
+    window.loginDemo = function() {
+      const nameInput = prompt("Masukkan Nama untuk Login Demo:", "Rahmat Kangkung");
+      if (nameInput && nameInput.trim() !== "") {
+        localStorage.setItem('codelearn_demouser', nameInput.trim());
+        alert(`🎉 Berhasil Login sebagai "${nameInput.trim()}"!`);
+        checkDemoAuth();
+      }
+    };
+
+    window.logoutDemo = function() {
+      if (confirm("Keluar dari Akun Demo?")) {
+        localStorage.removeItem('codelearn_demouser');
+        localStorage.removeItem('codelearn_is_premium');
+        alert("Kamu telah keluar.");
+        checkDemoAuth();
+      }
+    };
+
+    // Simulasi Pembayaran (Hanya bisa dibeli jika sudah Login Demo)
+    window.processDemoPayment = function(moduleName) {
+      const demoUser = localStorage.getItem('codelearn_demouser');
+      const isPremium = localStorage.getItem('codelearn_is_premium') === 'true';
+
+      if (!demoUser) {
+        alert("⚠️ Silakan klik 'Login Demo' di pojok kanan atas terlebih dahulu sebelum melakukan upgrade/pembayaran!");
+        return;
+      }
+
+      if (isPremium) {
+        alert(`✨ Akun kamu (${demoUser}) sudah memiliki Akses Premium! Semua modul proyek sudah terbuka.`);
+        return;
+      }
+
+      const confirmPay = confirm(`⭐ SIMULASI PEMBAYARAN PREMIUM ⭐\n\nAkun Demo: ${demoUser}\nPilihan: ${moduleName}\nHarga Simulasi: Rp 45.000\n\nKlik OK untuk menyelesaikan pembayaran.`);
+      if (confirmPay) {
+        localStorage.setItem('codelearn_is_premium', 'true');
+        alert("🎉 Pembayaran Sukses! Akun demo kamu sekarang berstatus PREMIUM dan seluruh kunci terbuka!");
+        checkDemoAuth();
+      }
+    };
+
+    // Jalankan pengecekan saat halaman siap
+    window.addEventListener('DOMContentLoaded', checkDemoAuth);
+  </script>
+
+  <!-- SCRIPT SIDEBAR NAVIGATION -->
+  <script>
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    document.getElementById('openMenuBtn').addEventListener('click', () => {
+      sidebar.classList.add('active');
+      sidebarOverlay.classList.add('active');
+    });
+    document.getElementById('closeMenuBtn').addEventListener('click', closeMenu);
+    sidebarOverlay.addEventListener('click', closeMenu);
+
+    function closeMenu() {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Materi: Struktur Dasar HTML - CodeLearn</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .lesson-container {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+    .lesson-sidebar {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      height: fit-content;
+    }
+    .lesson-nav {
+      list-style: none;
+    }
+    .lesson-nav li a {
+      display: block;
+      padding: 0.5rem 0.75rem;
+      color: var(--text-muted);
+      border-radius: 4px;
+      font-size: 0.88rem;
+    }
+    .lesson-nav li.active a, .lesson-nav li a:hover {
+      background-color: var(--bg-card-hover);
+      color: var(--text-main);
+    }
+    .content-box {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+    }
+    .content-box h2 {
+      margin: 1.5rem 0 0.5rem 0;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.4rem;
+      font-size: 1.25rem;
+    }
+    .callout-warning {
+      background-color: rgba(245, 158, 11, 0.1);
+      border-left: 3px solid var(--warning);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.9rem;
+    }
+    @media (max-width: 768px) {
+      .lesson-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="brand">
+        <button class="hamburger-btn" id="hamburgerBtn">☰</button>
+        <a href="index.html" class="logo">Code<span>Learn</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="belajar.html" class="active">Belajar</a></li>
+        <li><a href="playground.html">Playground</a></li>
+        <li><a href="pricing.html">Harga</a></li>
+      </ul>
+      <div id="authNavContainer"></div>
+    </div>
+  </nav>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">Code<span>Learn</span></div>
+      <button class="sidebar-close" id="sidebarClose">&times;</button>
+    </div>
+    <div class="sidebar-section-title">NAVIGASI MATERI</div>
+    <ul class="sidebar-menu">
+      <li><a href="belajar.html">← Kembali ke Jalur Belajar</a></li>
+    </ul>
+  </aside>
+
+  <main class="container lesson-container">
+    <aside class="lesson-sidebar">
+      <h4 style="margin-bottom:0.75rem; font-size:0.95rem;">Modul HTML Dasar</h4>
+      <ul class="lesson-nav">
+        <li><a href="#">1. Pengenalan Web</a></li>
+        <li class="active"><a href="#">2. Struktur Dasar HTML</a></li>
+        <li><a href="#">3. Elemen Teks & Paragraph</a></li>
+        <li><a href="#">4. Anchor Link & Image</a></li>
+        <li><a href="#">5. Form Input Data</a></li>
+      </ul>
+    </aside>
+
+    <article class="content-box">
+      <h1>Struktur Dasar Dokumen HTML</h1>
+      <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.25rem;">Estimasi waktu: 10 Menit • Tingkat: Pemula</p>
+
+      <h2>1. Pengenalan Konsep</h2>
+      <p>Setiap dokumen HTML memiliki kerangka standar yang wajib ditulis agar browser dapat membaca dan menampilkan isi halaman web dengan benar.</p>
+
+      <h2>2. Kenapa Ini Penting?</h2>
+      <p>Di dunia kerja dan proyek nyata, melewatkan tag utama seperti <code><!DOCTYPE html></code> dapat menyebabkan browser masuk ke dalam <em>Quirks Mode</em>, yang mengakibatkan tampilan CSS menjadi rusak atau tidak konsisten antar browser.</p>
+
+      <h2>3. Contoh Kode</h2>
+      <div class="code-block">&lt;!DOCTYPE html&gt;
+&lt;html lang="id"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Halaman Pertama Saya&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Hello CodeLearn!&lt;/h1&gt;
+    &lt;p&gt;Saya siswa SMK siap menjadi Web Developer.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</div>
+
+      <h2>4. Bedah Kode secara Detail</h2>
+      <ul style="margin-left: 1.25rem; color: var(--text-muted);">
+        <li><strong style="color:var(--text-main);">&lt;!DOCTYPE html&gt;:</strong> Deklarasi standar untuk memberi tahu browser bahwa file ini menggunakan versi HTML5.</li>
+        <li><strong style="color:var(--text-main);">&lt;html&gt;:</strong> Tag pembungkus utama seluruh elemen pada dokumen HTML.</li>
+        <li><strong style="color:var(--text-main);">&lt;head&gt;:</strong> Berisi informasi metadata (seperti judul browser dan pengaturan karakter) yang tidak terlihat langsung di halaman utama.</li>
+        <li><strong style="color:var(--text-main);">&lt;title&gt;:</strong> Menentukan judul yang muncul pada tab browser Anda.</li>
+        <li><strong style="color:var(--text-main);">&lt;body&gt;:</strong> Tempat menaruh seluruh konten visual seperti teks, gambar, dan tombol.</li>
+      </ul>
+
+      <h2>5. Kesalahan Umum Pemula</h2>
+      <div class="callout-warning">
+        <strong>⚠️ Perhatian:</strong> Banyak pemula lupa menutup tag (misalnya menulis <code>&lt;p&gt;isi teks</code> tanpa <code>&lt;/p&gt;</code>) atau menulis tag di luar elemen <code>&lt;body&gt;</code>. Pastikan selalu memeriksa pasangan tag pembuka dan penutup.
+      </div>
+
+      <h2>6. Latihan Mandiri</h2>
+      <p>Coba buka halaman Playground, lalu ganti teks di dalam tag <code>&lt;h1&gt;</code> dengan nama lengkap dan sekolah SMK Anda.</p>
+
+      <div style="margin-top: 2rem; display:flex; gap:1rem;">
+        <a href="playground.html" class="btn-primary">Coba di Playground</a>
+        <a href="quiz.html" class="btn-outline">Ikuti Quiz Materi Ini</a>
+      </div>
+    </article>
+  </main>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

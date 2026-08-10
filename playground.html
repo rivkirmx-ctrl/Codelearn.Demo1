@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeLearn - Playground Editor</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background-color: #0d0d12;
+      color: #ededed;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* --- NAVBAR HEADER --- */
+    header {
+      background-color: #161622;
+      border-bottom: 1px solid #2a2a3c;
+      padding: 0.4rem 0.8rem;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn-hamburger {
+      background: #232334;
+      border: 1px solid #363650;
+      color: #fff;
+      font-size: 0.9rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .logo {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+    .logo span { color: #c084fc; }
+
+    /* TOMBOL RUN CODE UNGU RINGKAS */
+    .btn-run-sm {
+      background: linear-gradient(135deg, #7e22ce, #a855f7);
+      border: none;
+      color: #fff;
+      padding: 0.25rem 0.65rem;
+      border-radius: 5px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s;
+      box-shadow: 0 2px 6px rgba(168, 85, 247, 0.25);
+    }
+    .btn-run-sm:hover {
+      background: linear-gradient(135deg, #6b21a8, #9333ea);
+      transform: translateY(-1px);
+    }
+
+    /* SIDEBAR DRAWER */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 240px;
+      height: 100%;
+      background: #161622;
+      border-right: 1px solid #2a2a3c;
+      z-index: 101;
+      padding: 1rem;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      border-bottom: 1px solid #2a2a3c;
+      padding-bottom: 0.6rem;
+    }
+    .btn-close { background: none; border: none; color: #aaa; font-size: 1.2rem; cursor: pointer; }
+    .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.55rem 0.7rem;
+      color: #ddd;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.82rem;
+    }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background: #232334; color: #c084fc; }
+
+    /* LAYOUT EDITOR PLAYGROUND */
+    .playground-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 45px);
+    }
+
+    /* TAB EDITOR RINGKAS */
+    .editor-tabs {
+      background: #161622;
+      border-bottom: 1px solid #2a2a3c;
+      display: flex;
+      gap: 2px;
+      padding: 0 0.5rem;
+    }
+    .tab-btn {
+      background: #232334;
+      border: none;
+      color: #888;
+      padding: 0.3rem 0.7rem;
+      font-size: 0.72rem;
+      cursor: pointer;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+      margin-top: 4px;
+    }
+    .tab-btn.active {
+      background: #0d0d12;
+      color: #c084fc;
+      font-weight: bold;
+      border: 1px solid #2a2a3c;
+      border-bottom: 1px solid #0d0d12;
+    }
+
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      height: 100%;
+    }
+    @media (max-width: 768px) {
+      .workspace { flex-direction: column; }
+    }
+
+    .editor-area {
+      flex: 1;
+      background: #0d0d12;
+      position: relative;
+    }
+    .code-input {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      color: #f8fafc;
+      border: none;
+      padding: 0.8rem;
+      font-family: "Courier New", Courier, monospace;
+      font-size: 0.82rem;
+      resize: none;
+      outline: none;
+    }
+
+    .preview-area {
+      flex: 1;
+      background: #ffffff;
+      border-left: 1px solid #2a2a3c;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR HEADER -->
+  <header>
+    <div class="nav-container">
+      <div class="nav-left">
+        <button class="btn-hamburger" id="openMenuBtn">☰</button>
+        <a href="index.html" class="logo">Code<span>Learn</span></a>
+      </div>
+      
+      <!-- Tombol Run Code Ungu Ringkas -->
+      <button class="btn-run-sm" onclick="runCode()">
+        ▶ Run Code
+      </button>
+    </div>
+  </header>
+
+  <!-- SIDEBAR MENU DRAWER -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="logo">Code<span>Learn</span></a>
+      <button class="btn-close" id="closeMenuBtn">&times;</button>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="index.html">🏠 Beranda</a></li>
+      <li><a href="playground.html" class="active">💻 Playground</a></li>
+      <li><a href="belajar.html?course=html">🌐 Materi HTML5</a></li>
+      <li><a href="belajar.html?course=css">🎨 Materi CSS3</a></li>
+      <li><a href="belajar.html?course=js">⚡ Materi JavaScript</a></li>
+    </ul>
+  </aside>
+
+  <!-- PLAYGROUND WORKSPACE -->
+  <div class="playground-container">
+    <div class="editor-tabs">
+      <button class="tab-btn active" onclick="switchTab('html')">HTML</button>
+      <button class="tab-btn" onclick="switchTab('css')">CSS</button>
+      <button class="tab-btn" onclick="switchTab('js')">JS</button>
+    </div>
+
+    <div class="workspace">
+      <div class="editor-area">
+        <textarea id="htmlInput" class="code-input" placeholder="Tulis HTML di sini..."><h1>Halo Dunia!</h1>
+<p>Selamat datang di Playground CodeLearn.</p>
+<button id="btnKlik">Klik Saya</button></textarea>
+
+        <textarea id="cssInput" class="code-input" style="display:none;" placeholder="Tulis CSS di sini...">body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f4f4f9;
+}
+h1 { color: #9333ea; }
+button {
+  padding: 8px 16px;
+  background: #9333ea;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}</textarea>
+
+        <textarea id="jsInput" class="code-input" style="display:none;" placeholder="Tulis JS di sini...">document.getElementById('btnKlik').addEventListener('click', () => {
+  alert('Tombol berhasil diklik!');
+});</textarea>
+      </div>
+
+      <div class="preview-area">
+        <iframe id="outputFrame"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPT PLAYGROUND LOGIC -->
+  <script>
+    let currentTab = 'html';
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('htmlInput').style.display = 'none';
+      document.getElementById('cssInput').style.display = 'none';
+      document.getElementById('jsInput').style.display = 'none';
+
+      if(tab === 'html') {
+        document.getElementById('htmlInput').style.display = 'block';
+        event.target.classList.add('active');
+      } else if(tab === 'css') {
+        document.getElementById('cssInput').style.display = 'block';
+        event.target.classList.add('active');
+      } else if(tab === 'js') {
+        document.getElementById('jsInput').style.display = 'block';
+        event.target.classList.add('active');
+      }
+    }
+
+    function runCode() {
+      const html = document.getElementById('htmlInput').value;
+      const css = `<style>${document.getElementById('cssInput').value}</style>`;
+      const js = `<script>${document.getElementById('jsInput').value}<\/script>`;
+
+      const iframe = document.getElementById('outputFrame').contentWindow.document;
+      iframe.open();
+      iframe.write(html + css + js);
+      iframe.close();
+    }
+
+    window.onload = runCode;
+
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    document.getElementById('openMenuBtn').addEventListener('click', () => {
+      sidebar.classList.add('active');
+      sidebarOverlay.classList.add('active');
+    });
+    document.getElementById('closeMenuBtn').addEventListener('click', closeMenu);
+    sidebarOverlay.addEventListener('click', closeMenu);
+
+    function closeMenu() {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    }
+  </script>
+</body>
+</html>

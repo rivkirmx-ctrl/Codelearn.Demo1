@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Interaktif - CodeLearn</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    body {
+      background-color: #0d0d12;
+      color: #ededed;
+      line-height: 1.6;
+      padding-bottom: 3rem;
+    }
+
+    /* --- NAVBAR HEADER --- */
+    header {
+      background-color: #161622;
+      border-bottom: 1px solid #2a2a3c;
+      padding: 0.5rem 0.8rem;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+    .nav-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .btn-hamburger {
+      background: #232334;
+      border: 1px solid #363650;
+      color: #fff;
+      font-size: 1rem;
+      padding: 0.2rem 0.45rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .logo {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+    }
+    .logo span { color: #c084fc; }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .btn-nav-sm {
+      background: #232334;
+      border: 1px solid #363650;
+      color: #ccc;
+      padding: 0.22rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.72rem;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s;
+    }
+    .btn-nav-sm:hover { background: #2d2d42; color: #fff; }
+
+    /* --- SIDEBAR DRAWER --- */
+    .sidebar-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7); z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+    .sidebar {
+      position: fixed; top: 0; left: 0; width: 260px; height: 100%;
+      background: #161622; border-right: 1px solid #2a2a3c; z-index: 101; padding: 1rem;
+      transform: translateX(-100%); transition: transform 0.3s ease; display: flex; flex-direction: column;
+    }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.2rem; border-bottom: 1px solid #2a2a3c; padding-bottom: 0.6rem;
+    }
+    .btn-close { background: none; border: none; color: #aaa; font-size: 1.3rem; cursor: pointer; }
+    .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; overflow-y: auto; }
+    .sidebar-menu a {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.55rem 0.7rem; color: #ddd; text-decoration: none; border-radius: 6px; font-size: 0.82rem; cursor: pointer;
+    }
+    .sidebar-menu a span { display: flex; align-items: center; gap: 0.7rem; }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background: #232334; color: #c084fc; }
+
+    /* --- QUIZ STYLES (RAPI & JARAK AMAN) --- */
+    .container { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+    
+    .quiz-card {
+      background: #161622;
+      border: 1px solid #2a2a3c;
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem; /* Jarak antar kartu soal lebih lega */
+    }
+    .quiz-question {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 1.2rem; /* Jarak aman antara teks soal dan pilihan jawaban */
+      line-height: 1.5;
+    }
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem; /* Jarak antar tombol pilihan jawaban */
+    }
+    .quiz-option {
+      background: #232334;
+      border: 1px solid #363650;
+      color: #ddd;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+    }
+    .quiz-option:hover {
+      background: #2d2d42;
+      border-color: #c084fc;
+      color: #fff;
+    }
+    .result-box {
+      text-align: center;
+      background: #161622;
+      border: 1px solid #2a2a3c;
+      border-radius: 10px;
+      padding: 2.5rem;
+      display: none;
+    }
+    .btn-submit {
+      width: 100%;
+      padding: 0.85rem;
+      background: #9333ea;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+    .btn-submit:hover {
+      background: #7e22ce;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR HEADER -->
+  <header>
+    <div class="nav-container">
+      <div class="nav-left">
+        <button class="btn-hamburger" id="openMenuBtn">☰</button>
+        <a href="index.html" class="logo">Code<span>Learn</span></a>
+      </div>
+      <div class="nav-right">
+        <a href="index.html" class="btn-nav-sm">🏠 Beranda</a>
+        <a href="playground.html" class="btn-nav-sm">⚡ Playground</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- SIDEBAR MENU DRAWER -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="logo">Code<span>Learn</span></a>
+      <button class="btn-close" id="closeMenuBtn">&times;</button>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="index.html"><span>🏠 Beranda</span></a></li>
+      <li><a href="belajar.html"><span>📚 Materi Belajar</span></a></li>
+      <li><a href="playground.html"><span>💻 Playground</span></a></li>
+      <li><a href="quiz.html" class="active"><span>🧠 Quiz Interaktif</span></a></li>
+      <li><a href="pricing.html"><span>⭐ Harga & Premium</span></a></li>
+    </ul>
+  </aside>
+
+  <!-- KONTEN UTAMA KUIS -->
+  <main class="container">
+    <div style="text-align:center; margin-bottom:2.5rem;">
+      <h2 style="color:#fff; margin-bottom:0.4rem;">🧠 Kuis Web Development Dasar</h2>
+      <p style="color:#aaa; font-size:0.85rem;">Uji kemampuan HTML, CSS, dan JavaScript kamu di sini.</p>
+    </div>
+
+    <div id="quizContainer">
+      <!-- Soal 1 -->
+      <div class="quiz-card" data-q="1">
+        <div class="quiz-question">1. Tag HTML apakah yang digunakan untuk membuat sebuah hyperlink atau tautan halaman web?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="selectOption(this, 1, 'a')">&lt;link&gt;</button>
+          <button class="quiz-option" onclick="selectOption(this, 1, 'b')">&lt;a&gt;</button>
+          <button class="quiz-option" onclick="selectOption(this, 1, 'c')">&lt;href&gt;</button>
+          <button class="quiz-option" onclick="selectOption(this, 1, 'd')">&lt;url&gt;</button>
+        </div>
+      </div>
+
+      <!-- Soal 2 -->
+      <div class="quiz-card" data-q="2">
+        <div class="quiz-question">2. Properti CSS manakah yang digunakan untuk mengubah warna teks pada elemen?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="selectOption(this, 2, 'a')">text-color</button>
+          <button class="quiz-option" onclick="selectOption(this, 2, 'b')">font-color</button>
+          <button class="quiz-option" onclick="selectOption(this, 2, 'c')">color</button>
+          <button class="quiz-option" onclick="selectOption(this, 2, 'd')">background-color</button>
+        </div>
+      </div>
+
+      <!-- Soal 3 -->
+      <div class="quiz-card" data-q="3">
+        <div class="quiz-question">3. Bagaimana cara menuliskan perintah untuk menampilkan pesan di console JavaScript?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="selectOption(this, 3, 'a')">print("Halo");</button>
+          <button class="quiz-option" onclick="selectOption(this, 3, 'b')">console.log("Halo");</button>
+          <button class="quiz-option" onclick="selectOption(this, 3, 'c')">echo "Halo";</button>
+          <button class="quiz-option" onclick="selectOption(this, 3, 'd')">document.write = "Halo";</button>
+        </div>
+      </div>
+
+      <!-- Soal 4 -->
+      <div class="quiz-card" data-q="4">
+        <div class="quiz-question">4. Di dalam CSS, simbol selektor apakah yang digunakan untuk memilih elemen berdasarkan nama Class?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="selectOption(this, 4, 'a')">Titik (.)</button>
+          <button class="quiz-option" onclick="selectOption(this, 4, 'b')">Tanda pagar (#)</button>
+          <button class="quiz-option" onclick="selectOption(this, 4, 'c')">Bintang (*)</button>
+          <button class="quiz-option" onclick="selectOption(this, 4, 'd')">Koma (,)</button>
+        </div>
+      </div>
+
+      <!-- Soal 5 -->
+      <div class="quiz-card" data-q="5">
+        <div class="quiz-question">5. Manakah tag HTML yang paling tepat untuk membungkus judul utama (heading level 1) dalam dokumen?</div>
+        <div class="quiz-options">
+          <button class="quiz-option" onclick="selectOption(this, 5, 'a')">&lt;head&gt;</button>
+          <button class="quiz-option" onclick="selectOption(this, 5, 'b')">&lt;header&gt;</button>
+          <button class="quiz-option" onclick="selectOption(this, 5, 'c')">&lt;h1&gt;</button>
+          <button class="quiz-option" onclick="selectOption(this, 5, 'd')">&lt;title&gt;</button>
+        </div>
+      </div>
+
+      <button onclick="submitQuiz()" class="btn-submit">Selesai & Lihat Skor</button>
+    </div>
+
+    <!-- Kotak Hasil Skor -->
+    <div id="resultBox" class="result-box">
+      <h3 style="color:#c084fc; margin-bottom:0.5rem; font-size:1.3rem;">🎉 Kuis Telah Selesai!</h3>
+      <p id="scoreText" style="font-size:1.4rem; margin-bottom:1.5rem; font-weight:bold;"></p>
+      <button onclick="location.reload()" style="padding:0.6rem 1.5rem; background:#232334; color:#fff; border:1px solid #363650; border-radius:6px; cursor:pointer; font-size:0.9rem;">Ulangi Kuis</button>
+    </div>
+  </main>
+
+  <!-- SCRIPT LOGIKA KUIS -->
+  <script>
+    const correctAnswers = {
+      1: 'b', // <a>
+      2: 'c', // color
+      3: 'b', // console.log()
+      4: 'a', // titik (.) untuk class
+      5: 'c'  // <h1>
+    };
+
+    let userAnswers = {};
+
+    function selectOption(button, questionNum, chosenOption) {
+      userAnswers[questionNum] = chosenOption;
+      
+      const card = button.closest('.quiz-card');
+      const options = card.querySelectorAll('.quiz-option');
+      
+      // Reset warna opsi lain dalam satu kartu
+      options.forEach(opt => {
+        opt.style.background = '#232334';
+        opt.style.borderColor = '#363650';
+        opt.style.color = '#ddd';
+      });
+      
+      // Beri gaya pada pilihan yang dipilih user
+      button.style.background = '#2d2d42';
+      button.style.borderColor = '#c084fc';
+      button.style.color = '#fff';
+    }
+
+    function submitQuiz() {
+      if (Object.keys(userAnswers).length === 0) {
+        alert("Silakan jawab beberapa pertanyaan terlebih dahulu!");
+        return;
+      }
+
+      let score = 0;
+      const totalQuestions = Object.keys(correctAnswers).length;
+
+      for (let q in correctAnswers) {
+        if (userAnswers[q] === correctAnswers[q]) {
+          score += (100 / totalQuestions);
+        }
+      }
+
+      const finalScore = Math.round(score);
+
+      document.getElementById('quizContainer').style.display = 'none';
+      const resultBox = document.getElementById('resultBox');
+      resultBox.style.display = 'block';
+      document.getElementById('scoreText').textContent = `Skor Kamu: ${finalScore} / 100`;
+    }
+
+    // Toggle Sidebar
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    document.getElementById('openMenuBtn').addEventListener('click', () => {
+      sidebar.classList.add('active');
+      sidebarOverlay.classList.add('active');
+    });
+    document.getElementById('closeMenuBtn').addEventListener('click', closeMenu);
+    sidebarOverlay.addEventListener('click', closeMenu);
+
+    function closeMenu() {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    }
+  </script>
+</body>
+</html>

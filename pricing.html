@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Harga & Premium - CodeLearn</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* --- SIDEBAR DRAWER TAMBAHAN --- */
+    .sidebar-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.active { opacity: 1; pointer-events: auto; }
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: 260px;
+      height: 100%;
+      background: #161622;
+      border-right: 1px solid #2a2a3c;
+      z-index: 101;
+      padding: 1rem;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar.active { transform: translateX(0); }
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.2rem;
+      border-bottom: 1px solid #2a2a3c;
+      padding-bottom: 0.6rem;
+    }
+    .btn-close { background: none; border: none; color: #aaa; font-size: 1.3rem; cursor: pointer; }
+    .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; overflow-y: auto; }
+    .sidebar-menu a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.55rem 0.7rem;
+      color: #ddd;
+      text-decoration: none;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+    .sidebar-menu a span { display: flex; align-items: center; gap: 0.7rem; }
+    .sidebar-menu a:hover, .sidebar-menu a.active { background: #232334; color: #c084fc; }
+
+    /* TOMBOL & BADGE DEMO LOGIN */
+    .btn-demo-login {
+      background: #232334;
+      border: 1px solid #9333ea;
+      color: #fff;
+      padding: 0.22rem 0.5rem;
+      border-radius: 5px;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+    .btn-demo-login:hover { background: #2e1d42; }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: #232334;
+      border: 1px solid #363650;
+      padding: 0.18rem 0.5rem 0.18rem 0.25rem;
+      border-radius: 15px;
+    }
+    .user-avatar-placeholder {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #9333ea;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border: 1px solid #a855f7;
+    }
+    .user-name-text {
+      font-size: 0.72rem;
+      color: #fff;
+      font-weight: 500;
+      max-width: 90px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-logout-icon {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.75rem;
+      margin-left: 0.1rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <div class="brand">
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">☰</button>
+        <a href="index.html" class="logo">Code<span>Learn</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="belajar.html">Belajar</a></li>
+        <li><a href="playground.html">Playground</a></li>
+        <li><a href="quiz.html">Quiz</a></li>
+        <li><a href="pricing.html" class="active">Harga</a></li>
+      </ul>
+      <div id="authNavContainer">
+        <button class="btn-demo-login" onclick="loginDemo()">👤 Login Demo</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR MENU DRAWER (GARIS 3) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="logo">Code<span>Learn</span></a>
+      <button class="btn-close" id="closeMenuBtn">&times;</button>
+    </div>
+    <ul class="sidebar-menu">
+      <li><a href="index.html"><span>🏠 Beranda</span></a></li>
+      <li><a href="belajar.html"><span>📚 Materi Belajar</span></a></li>
+      <li><a href="playground.html"><span>💻 Playground</span></a></li>
+      <li><a href="quiz.html"><span>❓ Quiz</span></a></li>
+      <li><a href="pricing.html" class="active"><span>⭐ Harga & Premium</span></a></li>
+      <li><hr style="border:0; border-top:1px solid #2a2a3c; margin:0.3rem 0;"></li>
+      <li style="font-size:0.7rem; color:#eab308; padding:0.2rem 0.7rem; font-weight:bold; margin-top:0.3rem;">MODUL PROYEK (PRO)</li>
+      <li><a onclick="openProModule('Modul HTML + CSS (Pro)')"><span>🚀 HTML + CSS</span> <span id="badgeSidebar1" style="font-size:0.7rem; color:#eab308;">🔒</span></a></li>
+      <li><a onclick="openProModule('Modul Fullstack (Pro)')"><span>🔥 Fullstack (JS)</span> <span id="badgeSidebar2" style="font-size:0.7rem; color:#eab308;">🔒</span></a></li>
+    </ul>
+  </aside>
+
+  <main class="container" style="margin-top:3rem; margin-bottom:4rem; max-width:800px;">
+    <div style="text-align:center; margin-bottom:3rem;">
+      <h2>Pilihan Paket Belajar</h2>
+      <p style="color:var(--text-muted);">Upgrade ke Premium untuk membuka seluruh tingkatan Menengah & Lanjutan</p>
+    </div>
+
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:2rem;">
+      <!-- Gratis -->
+      <div class="card" style="border:1px solid #333;">
+        <h3>Paket Gratis</h3>
+        <div style="font-size:2rem; font-weight:bold; margin:1rem 0;">Rp 0</div>
+        <ul style="list-style:none; padding:0; line-height:2; font-size:0.9rem; color:#bbb; margin-bottom:1.5rem;">
+          <li>✅ Akses Semua Materi Pemula (HTML, CSS, JS)</li>
+          <li>✅ Akses Code Playground</li>
+          <li>✅ Akses Quiz Interaktif</li>
+          <li>❌ Akses Tingkat Menengah & Lanjutan</li>
+        </ul>
+        <button class="btn-outline" style="width:100%;" disabled>Paket Saat Ini</button>
+      </div>
+
+      <!-- Premium Berbayar (Demo) -->
+      <div class="card" style="border:2px solid #eab308; background:linear-gradient(180deg, #18181b 0%, #09090b 100%);">
+        <span style="background:#eab308; color:#000; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">REKOMENDASI</span>
+        <h3 style="margin-top:0.5rem;">Pro Member (Demo)</h3>
+        <div style="font-size:2rem; font-weight:bold; color:#eab308; margin:1rem 0;">Rp 45.000 <span style="font-size:0.9rem; color:#888;">/ selamanya</span></div>
+        <ul style="list-style:none; padding:0; line-height:2; font-size:0.9rem; color:#eee; margin-bottom:1.5rem;">
+          <li>✅ Semua Fitur Paket Gratis</li>
+          <li>✅ Akses Penuh Tingkat Menengah & Lanjutan</li>
+          <li>✅ Sertifikat Digital Kuis</li>
+          <li>✅ Prioritas Dukungan Belajar</li>
+        </ul>
+
+        <div style="margin-bottom:1rem;">
+          <label style="display:block; font-size:0.8rem; color:#888; margin-bottom:0.4rem;">Pilih Metode Pembayaran Demo:</label>
+          <select id="paymentMethod" style="width:100%; padding:0.6rem; background:#0d0d0d; border:1px solid #333; color:#fff; border-radius:6px;">
+            <option value="QRIS (Gopay/OVO/Dana)">QRIS All Payment</option>
+            <option value="Transfer Bank BCA">Transfer Bank BCA</option>
+            <option value="E-Wallet DANA">E-Wallet DANA</option>
+          </select>
+        </div>
+
+        <button onclick="openProModule('Paket Pro Member (Selamanya)', document.getElementById('paymentMethod').value)" class="btn-primary" id="btnBayar" style="width:100%; background:#eab308; color:#000; font-weight:bold; cursor:pointer;">
+          💳 Bayar Sekarang
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Script Penanganan Sidebar & Otentikasi Demo -->
+  <script>
+    // Logika buka/tutup Sidebar Garis 3
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const closeMenuBtn = document.getElementById('closeMenuBtn');
+
+    if (hamburgerBtn) {
+      hamburgerBtn.addEventListener('click', () => {
+        sidebar.classList.add('active');
+        sidebarOverlay.classList.add('active');
+      });
+    }
+
+    if (closeMenuBtn) {
+      closeMenuBtn.addEventListener('click', closeMenu);
+    }
+
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', closeMenu);
+    }
+
+    function closeMenu() {
+      sidebar.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    }
+
+    // Fungsi Cek Status Login Demo di Halaman Harga
+    function checkDemoAuthPricing() {
+      const demoUser = localStorage.getItem('codelearn_demouser');
+      const isPremium = localStorage.getItem('codelearn_is_premium') === 'true';
+      const authContainer = document.getElementById('authNavContainer');
+      const btnBayar = document.getElementById('btnBayar');
+      const badge1 = document.getElementById('badgeSidebar1');
+      const badge2 = document.getElementById('badgeSidebar2');
+
+      if (!authContainer) return;
+
+      if (demoUser) {
+        const initial = demoUser.charAt(0).toUpperCase();
+        authContainer.innerHTML = `
+          <div class="user-profile-badge">
+            <div class="user-avatar-placeholder">${initial}</div>
+            <span class="user-name-text">${demoUser}</span>
+            <button class="btn-logout-icon" onclick="logoutDemo()" title="Keluar">✕</button>
+          </div>
+        `;
+      } else {
+        authContainer.innerHTML = `
+          <button class="btn-demo-login" onclick="loginDemo()">👤 Login Demo</button>
+        `;
+      }
+
+      if (isPremium) {
+        if (btnBayar) {
+          btnBayar.textContent = "✨ Status: Member Premium (Aktif)";
+          btnBayar.style.background = "#22c55e";
+          btnBayar.style.color = "#fff";
+        }
+        if (badge1) badge1.textContent = "🔓";
+        if (badge2) badge2.textContent = "🔓";
+      } else {
+        if (btnBayar) {
+          btnBayar.textContent = "💳 Bayar Sekarang";
+          btnBayar.style.background = "#eab308";
+          btnBayar.style.color = "#000";
+        }
+        if (badge1) badge1.textContent = "🔒";
+        if (badge2) badge2.textContent = "🔒";
+      }
+    }
+
+    window.loginDemo = function() {
+      const nameInput = prompt("Masukkan Nama untuk Login Demo:", "Budi Santoso");
+      if (nameInput && nameInput.trim() !== "") {
+        localStorage.setItem('codelearn_demouser', nameInput.trim());
+        alert(`🎉 Berhasil Login sebagai "${nameInput.trim()}"!`);
+        checkDemoAuthPricing();
+      }
+    };
+
+    window.logoutDemo = function() {
+      if (confirm("Keluar dari Akun Demo?")) {
+        localStorage.removeItem('codelearn_demouser');
+        localStorage.removeItem('codelearn_is_premium');
+        alert("Kamu telah keluar.");
+        checkDemoAuthPricing();
+      }
+    };
+
+    // Fungsi Utama: Mengatur Tombol Pembayaran / Membuka Modul Pro
+    window.openProModule = function(moduleName, method = 'QRIS') {
+      const demoUser = localStorage.getItem('codelearn_demouser');
+      const isPremium = localStorage.getItem('codelearn_is_premium') === 'true';
+      
+      // 1. Cek apakah user sudah Login Demo
+      if (!demoUser) {
+        alert("⚠️ Silakan klik 'Login Demo' terlebih dahulu di pojok kanan atas!");
+        return;
+      }
+
+      // 2. Cek apakah akun SUDAH premium
+      if (isPremium) {
+        alert(`🚀 Akses Terbuka!\n\nModul "${moduleName}" dapat diakses karena akun demo kamu (${demoUser}) sudah berstatus Member Premium.`);
+        return;
+      }
+      
+      // 3. Kalau BELUM premium, jalankan simulasi pembayaran
+      const confirmPay = confirm(`⭐ SIMULASI PEMBAYARAN PREMIUM ⭐\n\nAkun Demo: ${demoUser}\nPilihan: ${moduleName}\nMetode: ${method}\nTotal Harga: Rp 45.000\n\nKlik OK untuk menyelesaikan pembayaran.`);
+      if (confirmPay) {
+        localStorage.setItem('codelearn_is_premium', 'true');
+        alert("🎉 Pembayaran Sukses! Akun demo kamu sekarang resmi menjadi PREMIUM!");
+        checkDemoAuthPricing(); // Update tampilan tombol/badge jadi hijau & terbuka
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', checkDemoAuthPricing);
+  </script>
+</body>
+</html>
